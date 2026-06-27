@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makse töötlemine...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f6f9;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a2e;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 48px 44px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    text-align: center;
+    position: relative;
+  }
+
+  .bank-logo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 32px;
+  }
+  .bank-logo span {
+    display: inline-block;
+    background: #1a1a2e;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+  }
+
+  .amount-display {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+    transition: all 0.5s;
+  }
+  .amount-label {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 36px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    background: #eee;
+    border-radius: 999px;
+    height: 8px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.82rem;
+    color: #666;
+    margin-bottom: 28px;
+    min-height: 20px;
+  }
+
+  .steps {
+    text-align: left;
+    margin-bottom: 28px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    color: #555;
+    opacity: 0.3;
+    transition: opacity 0.4s;
+  }
+  .step:last-child { border-bottom: none; }
+  .step.done { opacity: 1; color: #1a1a2e; }
+  .step .icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .step.done .icon { background: #dcfce7; }
+
+  .secure-badge {
+    font-size: 0.75rem;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  /* NALI EKRAAN */
+  .joke-screen {
+    display: none;
+  }
+  .joke-screen .big-emoji {
+    font-size: 4rem;
+    margin-bottom: 18px;
+    display: block;
+  }
+  .joke-screen h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #FF4D8D;
+  }
+  .joke-screen p {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .joke-screen .receipt {
+    background: #fff8f0;
+    border: 1px dashed #ffd166;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+  .joke-screen .receipt .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #ffecd0;
+    color: #555;
+  }
+  .joke-screen .receipt .row:last-child { border: none; font-weight: 700; color: #1a1a2e; }
+  .joke-screen .back-btn {
+    display: inline-block;
+    background: #2B1B33;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    margin-top: 8px;
+    cursor: pointer;
+    border: none;
+  }
+  .joke-screen .back-btn:hover { opacity: 0.85; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .pulsing { animation: pulse 1.2s infinite; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- TÕSINE MEKSE EKRAAN -->
+  <div id="serious">
+    <div class="bank-logo"><span>🔒 SECUREPAY</span></div>
+
+    <div class="amount-display" id="amountDisplay">120,00 €</div>
+    <div class="amount-label">Makse töötlemisel · <span id="merchant">Sa Maksad, Et Ma Kuulaks OÜ</span></div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-label pulsing" id="progressLabel">Ühenduse loomine pangaga...</div>
+
+    <div class="steps" id="stepsList">
+      <div class="step" id="s1"><div class="icon">1</div> Isiku tuvastamine</div>
+      <div class="step" id="s2"><div class="icon">2</div> Konto saldo kontrollimine</div>
+      <div class="step" id="s3"><div class="icon">3</div> Tehingu autoriseerimine</div>
+      <div class="step" id="s4"><div class="icon">4</div> Raha ülekandmine</div>
+    </div>
+
+    <div class="secure-badge">🔐 128-bit SSL krüpteering · Turvaline makse</div>
+  </div>
+
+  <!-- NALI EKRAAN -->
+  <div class="joke-screen" id="joke">
+    <span class="big-emoji">💸</span>
+    <h2>Makse õnnestus!</h2>
+    <p>Raha on läinud. Täpselt nii nagu su lootused.</p>
+
+    <div class="receipt">
+      <div class="row"><span>Teenus</span><span>Standardpakett</span></div>
+      <div class="row"><span>Kestus</span><span>30 minutit</span></div>
+      <div class="row"><span>Tähelepanu tase</span><span>Minimaalne</span></div>
+      <div class="row"><span>Emotsionaalne kahju</span><span>Tasuta lisand</span></div>
+      <div class="row"><span>Käibemaks</span><span>Sisaldub</span></div>
+      <div class="row"><span>KOKKU</span><span>120,00 €</span></div>
+    </div>
+
+    <p style="font-size:0.8rem; color:#aaa; margin-bottom:16px;">
+      Tegelikult ei toimunud ühtegi tehingut. See leht on puhas nali 😄<br>
+      Kviitung saadetakse e-mailile (mitte päriselt).
+    </p>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">← Tagasi avalehele</button>
+  </div>
+
+</div>
+
+<script>
+  const steps = [
+    { id: 's1', label: 'Isiku tuvastamine...', progress: 25, delay: 800 },
+    { id: 's2', label: 'Konto saldo kontrollimine...', progress: 50, delay: 1800 },
+    { id: 's3', label: 'Tehingu autoriseerimine...', progress: 75, delay: 3000 },
+    { id: 's4', label: 'Raha ülekandmine 💸', progress: 100, delay: 4400 },
+  ];
+
+  steps.forEach(({ id, label, progress, delay }) => {
+    setTimeout(() => {
+      document.getElementById('progressBar').style.width = progress + '%';
+      document.getElementById('progressLabel').textContent = label;
+      document.getElementById(id).classList.add('done');
+      document.getElementById(id).querySelector('.icon').textContent = '✓';
+    }, delay);
+  });
+
+  // Näita naljaekraani
+  setTimeout(() => {
+    document.getElementById('serious').style.display = 'none';
+    document.getElementById('joke').style.display = 'block';
+  }, 5800);
+
+  // Loe URL-i parameetrist paketti
+  const params = new URLSearchParams(window.location.search);
+  const pkg = params.get('pkg');
+  if (pkg === 'basic') {
+    document.getElementById('amountDisplay').textContent = '25,00 €';
+    document.querySelector('.receipt .row:first-child span:last-child').textContent = 'Põhipakett';
+    document.querySelector('.receipt .row:last-child span:last-child').textContent = '25,00 €';
+  } else if (pkg === 'vip') {
+    document.getElementById('amountDisplay').textContent = '500,00 €';
+    document.querySelector('.receipt .row:first-child span:last-child').textContent = 'VIP kõne';
+    document.querySelector('.receipt .row:last-child span:last-child').textContent = '500,00 €';
+  }
+</script>
+
+</body>
+</html>
